@@ -23,20 +23,24 @@ const client = new Client({
   ]
 }) 
 
+const fs = require('fs')
+const firebase = require('firebase/app');
+require('firebase/database')
+
 module.exports = client;
-client.SlashCommands = new Collection();
+client.slashCommands = new Collection();
 client.commands = new Collection();
 
-const { token } = process.env;
+const { token, apiKey, authDomain, databaseURL, projectId, storageBucket, messagingSenderId, appId, measurementId, } = process.env;
 
-client.on('ready', async () => {
-  console.log(`Ligado com sucesso
-Aplicação: ${client.user.username} (${client.user.id})
-Statisticas: ${client.guilds.cache.size} servidores | ${client.users.cache.size} usuário.
+// Entre com seu realtime firebase
+firebase.initializeApp({
+  apiKey, authDomain, databaseURL, projectId, storageBucket, messagingSenderId, appId, measurementId,
+});
 
-Convite:
-> https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands
-  `)
-})
+// Carrega as handlers (comandos que carregam eventos, comandos etc..)
+fs.readdirSync('./handlers').forEach((handler) => {
+  require(`./handlers/${handler}`)(client, token)
+});
 
 client.login(token)

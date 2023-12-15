@@ -12,6 +12,8 @@
   "dependencies": {
     "@types/node": "^18.0.6",
     "discord.js": "^14.14.1",
-    "node-fetch": "^3.2.6"
+    "firebase": "^8.7.0",
+    "node-fetch": "^3.2.6",
+    "parse-ms": "^3.0.0"
   }
 }
