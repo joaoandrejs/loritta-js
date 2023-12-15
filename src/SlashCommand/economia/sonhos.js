@@ -12,10 +12,10 @@ module.exports =  {
       "type": ApplicationCommandType.ChatInput,
       "options": [
         {
-          name: "user",
-          type: ApplicationCommandOptionType.User,
-          description: "O usuário que você deseja desvendar os sonhos dele",
-          required: false,
+          "name": "user",
+          "type": ApplicationCommandOptionType.User,
+          "description": "O usuário que você deseja desvendar os sonhos dele",
+          "required": false,
         }
       ],
     },
