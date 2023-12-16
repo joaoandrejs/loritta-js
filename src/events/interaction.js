@@ -14,30 +14,28 @@ client.on("interactionCreate", async (interaction) => {
     embed: '#FF00FF'
   }
   
-  await interaction.deferReply({ ephemeral: false }).catch(e => { });
-
   if (interaction.isCommand()) {
 
-      const args = [];
+    const args = [];
 
-      for (let option of interaction.options.data) {
-          if (option.type === "SUB_COMMAND") {
-              if (option.name) args.push(option.name);
-              option.options.forEach((x) => {
-                  if (x.value) args.push(x.value);
-              });
-          } else if (option.value) args.push(option.value);
-      }
-    
-    const cmd = client.slashCommands.get(interaction.commandName);
-    
-      if (!cmd)
-        return interaction.reply({ content: `${emoji.negativo} **|** Não consegui encontrar este comando.`, ephemeral: true });
+    for (let option of interaction.options.data) {
+        if (option.type === "SUB_COMMAND") {
+            if (option.name) args.push(option.name);
+            option.options.forEach((x) => {
+                if (x.value) args.push(x.value);
+            });
+        } else if (option.value) args.push(option.value);
+    }
+  
+  const cmd = client.slashCommands.get(interaction.commandName);
+  
+    if (!cmd)
+      return interaction.reply({ content: `${emoji.negativo} **|** Não consegui encontrar este comando.`, ephemeral: true });
 
-      await interaction.deferReply({ ephemeral: false }).catch(e => { });
-    
-      interaction.Comando = cmd.name + args.slice(0).join(' ');
-    
-      cmd.run(client, interaction, args, colors.embed, database, emoji);
+    await interaction.deferReply({ ephemeral: false }).catch(e => { });
+  
+    interaction.Comando = cmd.name + args.slice(0).join(' ');
+  
+    cmd.run(client, interaction, args, colors.embed, database, emoji);
   }
 })

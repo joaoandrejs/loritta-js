@@ -30,6 +30,7 @@ require('firebase/database')
 module.exports = client;
 client.slashCommands = new Collection();
 client.commands = new Collection();
+client.aliases = new Collection();
 
 const { token, apiKey, authDomain, databaseURL, projectId, storageBucket, messagingSenderId, appId, measurementId, } = process.env;
 
