@@ -166,7 +166,7 @@ module.exports =  {
       }
         break;
 
-      case 'rank': {}
+      case 'rank':
         break;
 
       case 'transações': {}

@@ -11,7 +11,7 @@
 
 #### Contribua no projeto, favorite e compartilhe:
 - [Github](https://github.com/vortexzjs/loritta-js)
-- [Replit](https://replit.com/@vortexdev/loritta-js)
+- [Replit](https://replit.com/@yongvortex/loritta-js)
 
 <p align="center">
 <img src="https://cdn.discordapp.com/attachments/708017680677863505/709834156145770534/lori_deitada.png">
