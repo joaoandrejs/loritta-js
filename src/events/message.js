@@ -1,6 +1,6 @@
 const client = require('../../index')
 const { prefixo } = require('../../config.json')
-const { PermissionsBitField } = require('discord.js')
+const { PermissionsBitField, EmbedBuilder } = require('discord.js')
 
 const firebase = require("firebase");
 const database = firebase.database();
@@ -15,7 +15,12 @@ client.on("messageCreate", async (message) => {
   if (message.channel && message.channel.viewable && message.member.permissions.has([PermissionsBitField.Flags.SendMessages])) {
 
     if(message.content == `<@${client.user.id}>` || message.content == `<@!${client.user.id}>`) {
-      return message.reply({ embeds: [embedbb], components: [actionRow]}) 
+			const embedbb = new EmbedBuilder()
+			.setDescription(`Olá <@${message.author.id}>, Meu nome é ${client.user.username} e meus comandos são todos slash!
+> Desenvolvido por [VRTX](https://discord.gg/cASeerDk3X)`)
+			// .setColor('RANDOM')
+
+      return message.reply({ embeds: [embedbb] }) 
     };
 
     const args = message.content.slice(prefixo.length).trim().split(/ +/g);

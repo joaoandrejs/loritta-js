@@ -18,7 +18,7 @@ module.exports =  {
 			return interaction.followUp({ embeds: [Embed], fetchReply: true, ephemeral: false  });
 		}
 
-		let Daily_quantity = Math.floor(Math.random() * (4000 - 1000 + 1)) + 1000;
+		let Daily_quantity = Math.floor(Math.random() * (4000 - 1000 + 1));
 		
 		await database.ref(`economia/cooldowns/${interaction.user.id}`).update({
 			daily: Date.now()
