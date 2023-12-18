@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ApplicationCommandOptionType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
+const { EmbedBuilder, ApplicationCommandType, ApplicationCommandOptionType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
 const { PUXAR_SALDO_USER, UPDATE_SONHOS_USER } = require('../../utils/functions.js')
 const ms = require('ms');
 
@@ -166,7 +166,7 @@ module.exports =  {
       }
         break;
 
-      case 'rank':
+      case 'rank': {}
         break;
 
       case 'transações': {}
