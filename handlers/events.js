@@ -1,7 +1,7 @@
-const fs = require('fs');
+const { readdirSync } = require('fs');
 
 module.exports = (client) => {
-  fs.readdirSync('./src/events/').filter((file) => file.endsWith('.js')).forEach((event) => {
+  readdirSync('./src/events/').filter((file) => file.endsWith('.js')).forEach((event) => {
     try {
       require(`../src/events/${event}`);
       console.log(`[ ✅ Evento carregado ] - ${event.split('.js')[0]}`);

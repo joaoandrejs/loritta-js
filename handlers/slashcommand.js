@@ -1,15 +1,14 @@
-const fs = require('fs');
+const { readdirSync } = require('fs');
 const { PermissionsBitField } = require('discord.js');
 const { Routes } = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
 
-const rest = new REST({ version: '9' }).setToken(process.env.token);
-
-module.exports = async (client) => {
+module.exports = async (client, token) => {
+  const rest = new REST({ version: '9' }).setToken(token);
   const slashCommands = [];
-
-  fs.readdirSync('./src/SlashCommand/').forEach(async dir => {
-    const files = fs.readdirSync(`./src/SlashCommand/${dir}/`).filter(file => file.endsWith('.js'));
+  
+  readdirSync('./src/SlashCommand/').forEach(async dir => {
+    const files = readdirSync(`./src/SlashCommand/${dir}/`).filter(file => file.endsWith('.js'));
 
     for (const file of files) {
       try {

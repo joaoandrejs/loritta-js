@@ -22,8 +22,7 @@ const client = new Client({
       GatewayIntentBits.MessageContent, // enable if you need message content things
   ]
 }) 
-
-const fs = require('fs')
+const { readdirSync } = require('fs');
 const firebase = require('firebase/app');
 require('firebase/database')
 
@@ -32,15 +31,16 @@ client.slashCommands = new Collection();
 client.commands = new Collection();
 client.aliases = new Collection();
 
-const { token, apiKey, authDomain, databaseURL, projectId, storageBucket, messagingSenderId, appId, measurementId, } = process.env;
+const { token } = require('dotenv').config().parsed;
+const { apiKey, authDomain, databaseURL, projectId, storageBucket, messagingSenderId, appId, measurementId, } = require('./config.json').database;
 
 // Entre com seu realtime firebase
 firebase.initializeApp({
-  apiKey, authDomain, databaseURL, projectId, storageBucket, messagingSenderId, appId, measurementId,
+  apiKey, authDomain, databaseURL, projectId, storageBucket, messagingSenderId, appId, measurementId
 });
 
 // Carrega as handlers (comandos que carregam eventos, comandos etc..)
-fs.readdirSync('./handlers').forEach((handler) => {
+readdirSync('./handlers').forEach((handler) => {
   require(`./handlers/${handler}`)(client, token)
 });
 

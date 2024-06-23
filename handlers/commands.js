@@ -1,8 +1,8 @@
-const fs = require('fs');
+const { readdirSync } = require('fs');
 
 module.exports = (client) => {
-  fs.readdirSync('./src/commands/').forEach(dir => {
-    const files = fs.readdirSync(`./src/commands/${dir}/`).filter(file => file.endsWith('.js'));
+  readdirSync('./src/commands/').forEach(dir => {
+    const files = readdirSync(`./src/commands/${dir}/`).filter(file => file.endsWith('.js'));
     if (!files || files.length <= 0) {
       console.log(`No commands found in directory ${dir}`);
       return;
