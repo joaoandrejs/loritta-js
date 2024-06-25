@@ -5,6 +5,30 @@ const ms = require('ms');
 
 module.exports = {
 	
+	CONVERTER_STR: function (val = 0) {
+
+		let multiplier = val.substr(-1).toLowerCase();
+	
+		if (multiplier === "m" || val.substr(-2).toLowerCase() === 'kk') {
+			return parseFloat(val) * 1e6;
+		}
+		else
+		if (multiplier === "k") {
+			return parseFloat(val) * 1e3;
+		}
+		else
+		if (multiplier === "b") {
+			return parseFloat(val) * 1e12;
+		}
+		else
+		if (multiplier === "t") {
+			return parseFloat(val) * 1e15;
+		}
+		else {
+			return Number(val)
+		}
+	  },
+
 	TRANSACTION_USER_UPDATE: async function(interaction, user, mensagem) {
 			if (!interaction || !user || !mensagem) {
 				console.warn(`[LOGS] - [DETAILS_NOT_PROVIDED] (TransactionUpdate): Algum dos objetos não foi definido`);

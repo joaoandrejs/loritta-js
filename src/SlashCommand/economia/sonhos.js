@@ -1,4 +1,4 @@
-const { EmbedBuilder, ApplicationCommandType, ApplicationCommandOptionType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
+const { ApplicationCommandType, ApplicationCommandOptionType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
 const { PUXAR_SALDO_USER, UPDATE_SONHOS_USER } = require('../../utils/functions.js')
 const ms = require('ms');
 
@@ -93,43 +93,39 @@ module.exports =  {
     switch (Sub_Command) {
 
       case 'atm': {
-          let user = interaction.options.getUser('user')
-          if (!user) user = interaction.user;
-  
-          let { sonhos } = await PUXAR_SALDO_USER(interaction, user)
-  
-          if (user.id !== interaction.user.id) 
-            return interaction.followUp({ content: `💸 **|** ${interaction.user} ${user} tem **${sonhos} sonhos**.` })
-  
-          return interaction.followUp({ content: `💸 **|** ${user} Você tem **${sonhos} sonhos!** Você está em **#0 lugar** no ranking, veja outros ostentadores em \`/sonhos top\` ` })
+          const user = interaction.options.getUser('user') || interaction.user;
+
+          const { sonhos } = await PUXAR_SALDO_USER(interaction, user)
+
+          return interaction.followUp({ content: `💸 **|** ${user} Você tem **${sonhos} sonhos!** ${user.id !== interaction.user.id ? `Você está em **#0 lugar** no ranking, veja outros ostentadores em \`/sonhos top\`` : ''} ` })
       }
         break;
 
       case 'pagar': {
 
-        let user = interaction.options.getUser('user')
+        const user = interaction.options.getUser('user')
         if ([user.id].includes(interaction.user.id)) return interaction.followUp({ content: `:x: **|** Transferência concluída com sucesso! Você não recebeu nada de si mesmo, porque você está tentando transferir sonhos para si mesmo!`})
 
-        let quantity = interaction.options.getString('quantity')
+        const quantity = interaction.options.getString('quantity')
         if (quantity < 1) return interaction.followUp({ content: `:sob: **|** Uau, incrível! Você vai transferir zero sonhos, maravilha! Menos trabalho para mim, porque isso significa que não preciso preparar uma transação para você.`})
 
-        let Sonhos_interaction = await PUXAR_SALDO_USER(interaction, user)
+        const Sonhos_interaction = await PUXAR_SALDO_USER(interaction, user)
         if (quantity > Sonhos_interaction) return interaction.followUp({ content: `:xob: **|** Você não tem **${quantity} sonhos** para fazer isso! Você precisa conseguir mais **${quantity - Sonhos_interaction} sonhos** para continuar.`})
         
-        let expires_after = interaction.options.getString('expires_after');
-        if (!expires_after) expires_after = '900000'; // 15 minutos
+        const expires_after = interaction.options.getString('expires_after') || '900000'; // 15 minutos
         
-        const row = new ActionRowBuilder().addComponents(
-          new ButtonBuilder().setCustomId("aceitar").setStyle(ButtonStyle.Primary).setEmoji('🤝').setLabel('Aceitar Transferência').setDisabled(false),
-          
-          new ButtonBuilder().setCustomId("cancelar").setStyle(ButtonStyle.Danger).setEmoji('😭').setLabel('Cancelar').setDisabled(false),
-        ), row_accepted = new ActionRowBuilder().addComponents(
-          new ButtonBuilder().setCustomId("accepted").setStyle(ButtonStyle.Primary).setEmoji('🤝').setLabel('Transferência Aceita').setDisabled(true),
-        ), row_canceled = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId("canceled").setStyle(ButtonStyle.Secondary).setEmoji('❓').setLabel('Transferência Cancelada').setDisabled(true),
+        async function AddRow(Row, Id, Label, Style, Emoji, Disabled) {
+          return Row.addComponents(
+              new ButtonBuilder().setCustomId(Id).setStyle(Style).setEmoji(Emoji).setLabel(Label).setDisabled(Disabled),
           )
+        }
         
-        let msg = await interaction.followUp({ content: `💸 **|** Você está prestes a transferir **${quantity} sonhos** para ${user}!
+        const row = new ActionRowBuilder();
+
+        await AddRow(row, 'aceitar', 'Aceitar Transferência', ButtonStyle.Primary, '🤝', false)
+        await AddRow(row, 'cancelar', 'Cancelar', ButtonStyle.Danger, '😭', false)
+
+        const msg = await interaction.followUp({ content: `💸 **|** Você está prestes a transferir **${quantity} sonhos** para ${user}!
 💰 **|** Para confirmar a transação, ${user} deve aceitar a transação até: <t:${~~((Date.now() + ms(expires_after))/1000)}:F> (<t:${~~((Date.now() + ms(expires_after))/1000)}:R>)`, components: [row] })
 
         const coletor = msg.createMessageComponentCollector({ time: ms(expires_after) });
@@ -146,19 +142,29 @@ module.exports =  {
             await UPDATE_SONHOS_USER(interaction, interaction.user, '-', quantity, `{perdeu.sonhos.pay}`)
             await UPDATE_SONHOS_USER(interaction, user, '+', quantity, `{ganhou.sonhos.pay}`)
 
-            let Sonhos_interaction = await PUXAR_SALDO_USER(interaction, interaction.user)
-            let Sonhos_User = await PUXAR_SALDO_USER(interaction, user)
-
-            await msg.edit({ components: [row_accepted] });
+            const Sonhos_interaction = await PUXAR_SALDO_USER(interaction, interaction.user).then(x => x.sonhos)
+            const Sonhos_User = await PUXAR_SALDO_USER(interaction, user).then(x => x.sonhos)
+            
+            const newRow = new ActionRowBuilder();
+            await AddRow(newRow, 'accepted', 'Transferência Aceita', ButtonStyle.Primary, '🤝', true)
+            await msg.edit({ components: [newRow] });
             coletor.stop();
 
             return interaction.followUp({ content: `🤝 **|** Transferência realizada com sucesso! ${user} recebeu **${quantity} sonhos**!
-🧑 **|** ${ineraction.user} agora possui **${Sonhos_interaction} sonhos** e está em **#0 lugar** no ranking!
+🧑 **|** ${interaction.user} agora possui **${Sonhos_interaction} sonhos** e está em **#0 lugar** no ranking!
 👩 **|** ${user} agora possui **${Sonhos_User} sonhos** e está em **#0 lugar** no ranking!` })
           }
           else
             if (i.customId == 'cancelar') {
-              await interaction.editReply({ components: [row_canceled] });
+              
+              if (![user.id, interaction.user.id].includes(i.user.id)) {
+                return interaction.followUp({ content: `😡 | Espere um pouquinho... Isso não é para você, sai daqui!`, ephemeral: true })
+              }
+              
+              const newRow = new ActionRowBuilder();
+              await AddRow(newRow, 'canceled', 'Transferência Cancelada', ButtonStyle.Primary, '❓', true)
+              coletor.stop();
+              await interaction.editReply({ components: [newRow] });
             }
           
         })
